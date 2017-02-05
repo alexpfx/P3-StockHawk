@@ -1,10 +1,10 @@
 package com.udacity.stockhawk.ui;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -27,13 +27,17 @@ public class AddStockDialog extends DialogFragment {
     @BindView(R.id.dialog_stock)
     EditText stock;
 
+    private static final String TAG = "AddStockDialog";
+    private OnAddStockListener mOnAddStockListener;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        @SuppressLint("InflateParams") View custom = inflater.inflate(R.layout.add_stock_dialog, null);
+        @SuppressLint("InflateParams") View custom = inflater.inflate(R.layout.add_stock_dialog,
+                null);
 
         ButterKnife.bind(this, custom);
 
@@ -65,12 +69,23 @@ public class AddStockDialog extends DialogFragment {
         return dialog;
     }
 
-    private void addStock() {
-        Activity parent = getActivity();
-        if (parent instanceof MainActivity) {
-            ((MainActivity) parent).addStock(stock.getText().toString());
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (!(context instanceof OnAddStockListener)) {
+            return;
         }
+        this.mOnAddStockListener = (OnAddStockListener) context;
+    }
+
+    private void addStock() {
+        mOnAddStockListener.addStock(stock.getText().toString());
         dismissAllowingStateLoss();
+    }
+
+    public interface OnAddStockListener {
+        void addStock(String stock);
     }
 
 

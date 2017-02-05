@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
@@ -37,10 +38,13 @@ public final class QuoteSyncJob {
     private static final int PERIODIC_ID = 1;
     private static final int YEARS_OF_HISTORY = 2;
 
+    private static final String TAG = "QuoteSyncJob";
     private QuoteSyncJob() {
     }
 
     static void getQuotes(Context context) {
+
+
 
         Timber.d("Running sync job");
 
@@ -62,19 +66,20 @@ public final class QuoteSyncJob {
             }
 
             Map<String, Stock> quotes = YahooFinance.get(stockArray);
-            Iterator<String> iterator = stockCopy.iterator();
+
 
             Timber.d(quotes.toString());
 
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
+            Iterator<String> iterator = stockCopy.iterator();
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
-
 
                 Stock stock = quotes.get(symbol);
                 StockQuote quote = stock.getQuote();
 
+                Log.d(TAG, "getQuotes: "+quote);
                 float price = quote.getPrice().floatValue();
                 float change = quote.getChange().floatValue();
                 float percentChange = quote.getChangeInPercent().floatValue();
