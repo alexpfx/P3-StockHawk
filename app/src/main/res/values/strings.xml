@@ -35,4 +35,6 @@
         Error retrieving stock: <xliff:g id="stock">%s</xliff:g>
     </string>
 
+    <string name="description_add_stock_button">Add new stock to stock list</string>
+
 </resources>
