@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
@@ -67,19 +69,25 @@ public final class QuoteSyncJob {
 
             Map<String, Stock> quotes = YahooFinance.get(stockArray);
 
-
             Timber.d(quotes.toString());
 
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
             Iterator<String> iterator = stockCopy.iterator();
+            Log.d(TAG, "getQuotes: \n");
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
 
                 Stock stock = quotes.get(symbol);
+
+                if (stock.getName() == null){
+                    Log.d(TAG, "getQuotes: stock doesn't exists: "+stock.getSymbol());
+                    continue;
+                }
+
+
                 StockQuote quote = stock.getQuote();
 
-                Log.d(TAG, "getQuotes: "+quote);
                 float price = quote.getPrice().floatValue();
                 float change = quote.getChange().floatValue();
                 float percentChange = quote.getChangeInPercent().floatValue();
@@ -102,7 +110,6 @@ public final class QuoteSyncJob {
                 quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
                 quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
                 quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
-
 
                 quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
 
