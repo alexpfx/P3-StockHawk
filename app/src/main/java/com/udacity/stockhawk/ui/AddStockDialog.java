@@ -27,7 +27,6 @@ public class AddStockDialog extends DialogFragment {
     @BindView(R.id.dialog_stock)
     EditText stock;
 
-    private static final String TAG = "AddStockDialog";
     private OnAddStockListener mOnAddStockListener;
 
     @Override
