@@ -1,6 +1,7 @@
 package com.udacity.stockhawk.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -47,13 +48,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(String symbol) {
-        Timber.d("Symbol clicked: %s", symbol);
+        Intent intent = new Intent(this, PriceHistoryActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT, symbol);
+        startActivity(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements
                 PrefUtils.removeStock(MainActivity.this, symbol);
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
             }
+
         }).attachToRecyclerView(stockRecyclerView);
 
 
@@ -138,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this,
                 Contract.Quote.URI,
-                Contract.Quote.QUOTE_COLUMNS.toArray(new String[]{}),
+                Contract.Quote.QUOTE_COLUMNS,
                 null, null, Contract.Quote.COLUMN_SYMBOL);
     }
 

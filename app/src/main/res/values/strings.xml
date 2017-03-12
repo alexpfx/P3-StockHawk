@@ -31,10 +31,11 @@
 
     <string name="toast_stock_added_no_connectivity">Symbol <xliff:g>%s</xliff:g> added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
-    <string name="msg_error_retrieving_stock">
+    <string name="error_retrieving_stock">
         Error retrieving stock: <xliff:g id="stock">%s</xliff:g>
     </string>
 
-    <string name="description_add_stock_button">Add new stock to stock list</string>
+    <string name="description_add_stock_button">Add new stock to stock list, removing from stock list.</string>
+    <string name="title_activity_price_history">PriceHistoryActivity</string>
 
 </resources>

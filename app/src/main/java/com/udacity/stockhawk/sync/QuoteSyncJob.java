@@ -8,8 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 
+import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
@@ -42,6 +45,7 @@ public final class QuoteSyncJob {
     private QuoteSyncJob() {
     }
 
+
     static void getQuotes(Context context) {
         Timber.d("Running sync job");
 
@@ -65,20 +69,20 @@ public final class QuoteSyncJob {
 
             Timber.d(quotes.toString());
 
-            ArrayList<ContentValues> quoteCVs = new ArrayList<>();
+            List<ContentValues> quoteCVs = new ArrayList<>();
 
             Iterator<String> iterator = stockCopy.iterator();
-            Log.d(TAG, "getQuotes: \n");
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
 
                 Stock stock = quotes.get(symbol);
 
+                Timber.d(stock.getName());
                 if (stock.getName() == null){
-                    Log.d(TAG, "getQuotes: stock doesn't exists: "+stock.getSymbol());
+                    PrefUtils.removeStock(context, stock.getSymbol());
+                    notifyStockNotFound (context, stock.getSymbol());
                     continue;
                 }
-
 
                 StockQuote quote = stock.getQuote();
 
@@ -90,13 +94,10 @@ public final class QuoteSyncJob {
                 // The request will hang forever X_x
                 List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
 
-                StringBuilder historyBuilder = new StringBuilder();
+                HistoryBuilder builder = new HistoryBuilder();
 
                 for (HistoricalQuote it : history) {
-                    historyBuilder.append(it.getDate().getTimeInMillis());
-                    historyBuilder.append(", ");
-                    historyBuilder.append(it.getClose());
-                    historyBuilder.append("\n");
+                    builder.add(it);
                 }
 
                 ContentValues quoteCV = new ContentValues();
@@ -104,8 +105,7 @@ public final class QuoteSyncJob {
                 quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
                 quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
                 quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
-
-                quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
+                quoteCV.put(Contract.Quote.COLUMN_HISTORY, builder.toString());
 
                 quoteCVs.add(quoteCV);
 
@@ -122,6 +122,16 @@ public final class QuoteSyncJob {
         } catch (IOException exception) {
             Timber.e(exception, "Error fetching stock quotes");
         }
+    }
+
+    private static void notifyStockNotFound(final Context context, final String symbol) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, context.getString(R.string.error_retrieving_stock, symbol), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private static void schedulePeriodic(Context context) {
