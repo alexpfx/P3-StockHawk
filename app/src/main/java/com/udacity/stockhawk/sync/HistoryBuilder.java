@@ -2,7 +2,6 @@ package com.udacity.stockhawk.sync;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -20,7 +19,7 @@ public class HistoryBuilder {
 
     }
 
-    public HistoryBuilder (String history){
+    public HistoryBuilder(String history) {
         sb.append(history);
     }
 
@@ -41,7 +40,6 @@ public class HistoryBuilder {
     public String toString() {
         return sb.toString();
     }
-
 
 
     public List<HistoricalData> parse() {
