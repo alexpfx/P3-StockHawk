@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener, AddStockDialog.OnAddStockListener,
         StockAdapter.StockAdapterOnClickHandler {
 
+    public static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATE_UPDATED";
     private static final int STOCK_LOADER = 0;
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.recycler_view)
@@ -51,6 +52,11 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, PriceHistoryActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT, symbol);
         startActivity(intent);
+    }
+
+    private void updateWidgets() {
+        Intent dataUpdateIntent = new Intent(ACTION_DATA_UPDATED).setPackage(getPackageName());
+        sendBroadcast(dataUpdateIntent);
     }
 
     @Override
@@ -152,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements
         if (data.getCount() != 0) {
             error.setVisibility(View.GONE);
         }
+
+        updateWidgets();
         adapter.setCursor(data);
     }
 

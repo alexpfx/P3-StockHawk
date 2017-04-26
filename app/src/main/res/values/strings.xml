@@ -37,5 +37,6 @@
 
     <string name="description_add_stock_button">Add new stock to stock list, removing from stock list.</string>
     <string name="title_activity_price_history">PriceHistoryActivity</string>
+    <string name="widget_text_loading">Loading...</string>
 
 </resources>
